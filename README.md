@@ -26,5 +26,5 @@ Autonomy stack for Team Exodus — designed to run on NVIDIA Jetson Orin NX and 
 
 ### Clone
 ```bash
-git clone https://github.com/<your-org>/exodus-autonomy.git
-cd exodus-autonomy
+git clone https://github.com/TAUverIL/Exodus_Autonomy
+cd Exodus_Autonomy
