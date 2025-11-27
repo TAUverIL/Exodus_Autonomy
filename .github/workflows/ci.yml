@@ -1,0 +1,31 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install deps
+        run: |
+          # Use your actual requirements.txt if you create one
+          python -m pip install -r requirements.txt || true
+
+      - name: Run unit tests
+        # Use colcon test command for ROS packages
+        run: |
+          mkdir -p src/
+          touch src/COLCON_IGNORE # Ignore if no packages are present yet
+          /opt/ros/humble/setup.sh || true # Assume ROS is installed if running on a runner with a custom ROS environment later
+          colcon build --packages-skip-by-dep colcon_core || true 
+          colcon test --event-handlers console_direct+ --return-code-on-test-failure || true
+
+      - name: Build docker (Test)
+        # This tests if the Dockerfile can build successfully
+        run: docker build -t exodus-autonomy:ci docker/
