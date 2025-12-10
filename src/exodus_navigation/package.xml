@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>exodus_navigation</name>
+  <version>0.0.1</version>
+  <description>Navigation configuration and launch files for Exodus Autonomy</description>
+  <maintainer email="ros2user@todo.todo">ros2user</maintainer>
+  
+  <!-- This license must match the one in setup.py and the LICENSE file -->
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <!-- This is a dependency because your launch file includes from it -->
+  <exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>pointcloud_to_laserscan</exec_depend>
+
+  <!-- SLAM and map saving dependencies -->
+  <depend>slam_toolbox</depend>
+  <depend>nav2_map_server</depend>
+
+  <!-- Vision dependencies for YOLO -->
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>vision_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+</package>

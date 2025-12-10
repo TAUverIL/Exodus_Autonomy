@@ -26,6 +26,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'yolo_detector = exodus_navigation.yolo_detector:main',
         ],
     },
 )
