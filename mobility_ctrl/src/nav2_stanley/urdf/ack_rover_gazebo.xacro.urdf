@@ -107,7 +107,7 @@
         </sensor> -->
     <!-- </gazebo> -->
 
-    <!-- Ackermann Controller -->
+    <!-- Ackermann Controller DO NOT DELETE-->
 
     <gazebo>
         <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">

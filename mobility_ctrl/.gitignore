@@ -24,3 +24,23 @@ __pycache__/
 
 # Ignore OS-specific files
 .DS_Store
+
+# ROS 2 Build Artifacts (CRITICAL)
+build/
+install/
+log/
+
+# Python compiled files
+__pycache__/
+*.pyc
+
+# IDE settings (VS Code, PyCharm)
+.vscode/
+.idea/
+
+# System temporary files
+.DS_Store
+*.swp
+# Ignore the virtual environment
+yolo_env/
+mobility_ctrl/yolo_env/
