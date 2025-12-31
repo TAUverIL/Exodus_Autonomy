@@ -19,20 +19,26 @@
 <robot name="zed_cameras" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:arg name="camera_name_1"   default="camera1" />
   <xacro:arg name="camera_name_2"   default="camera2" />
+  <xacro:arg name="camera_name_3"   default="camera3" />
   <xacro:arg name="camera_model_1"  default="zed2i" />
   <xacro:arg name="camera_model_2"  default="zed2i" />
+  <xacro:arg name="camera_model_3"  default="zed2i" />
   <xacro:arg name="use_zed_localization" default="true" />
 
   <xacro:property name="M_PI"     value="3.1415926535897931" />
 
-  <!-- Load the ZED xacro macro --> 
+  <!-- Load the ZED xacro macro -->
   <xacro:include filename="$(find zed_wrapper)/urdf/zed_macro.urdf.xacro" />
-  <!-- Add the first ZED Camera -->  
+  <!-- Add the first ZED Camera -->
   <xacro:zed_camera name="$(arg camera_name_1)" model="$(arg camera_model_1)">
     <gnss_origin/>
   </xacro:zed_camera>
   <!-- Add the second ZED Camera -->
   <xacro:zed_camera name="$(arg camera_name_2)" model="$(arg camera_model_2)">
+    <gnss_origin/>
+  </xacro:zed_camera>
+  <!-- Add the third ZED Camera (Manipulator/Overhead) -->
+  <xacro:zed_camera name="$(arg camera_name_3)" model="$(arg camera_model_3)">
     <gnss_origin/>
   </xacro:zed_camera>
 
@@ -70,5 +76,16 @@
       rpy="0 0 ${M_PI}"
     />
   </joint>
-  
+
+  <!-- Add the joint of the third camera (Manipulator/Overhead mount) -->
+  <!-- Positioned for overhead/manipulation view with 30° downward tilt -->
+  <joint name="$(arg camera_name_3)_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="$(arg camera_name_3)_camera_link"/>
+    <origin
+      xyz="0.2 0.0 1.2"
+      rpy="0 0.524 0"
+    />
+  </joint>
+
 </robot>

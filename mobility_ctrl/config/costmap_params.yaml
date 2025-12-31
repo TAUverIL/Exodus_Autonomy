@@ -1,0 +1,213 @@
+# ==============================================================================
+# NAV2 COSTMAP CONFIGURATION FOR EXODUS AUTONOMY ROVER
+# 3 ZED2i Camera Setup - Local and Global Costmaps
+# ==============================================================================
+
+# GLOBAL COSTMAP - Uses RTAB-Map 2D occupancy grid
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      # === Frame Configuration ===
+      global_frame: map
+      robot_base_frame: base_link
+
+      # === Update Rates ===
+      update_frequency: 1.0  # Update costmap at 1 Hz
+      publish_frequency: 1.0  # Publish costmap at 1 Hz
+
+      # === Map Configuration ===
+      use_sim_time: false
+      rolling_window: false  # Static map (doesn't move with robot)
+      width: 50  # 50 meters width
+      height: 50  # 50 meters height
+      resolution: 0.05  # 5cm per cell (matches RTAB-Map grid resolution)
+
+      # === Transform Tolerance ===
+      transform_tolerance: 0.3  # Seconds to wait for transforms
+
+      # === Costmap Layers (Order Matters!) ===
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+
+      # --- Static Layer: Uses RTAB-Map 2D Grid ---
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        enabled: true
+        subscribe_to_updates: true
+        map_subscribe_transient_local: true
+        map_topic: /rtabmap/grid_map  # ← CRITICAL: Connection to RTAB-Map!
+
+      # --- Obstacle Layer: Uses camera point clouds ---
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: true
+        footprint_clearing_enabled: true
+        max_obstacle_height: 2.0  # 2m max obstacle height
+        min_obstacle_height: 0.0  # Ground level
+
+        # Observation sources: 3 ZED cameras
+        observation_sources: camera1_cloud camera2_cloud camera3_cloud
+
+        # Camera 1 - Front Camera
+        camera1_cloud:
+          topic: /zed_front/zed_node/point_cloud/cloud_registered
+          sensor_frame: camera1_camera_link
+          data_type: "PointCloud2"
+          min_obstacle_height: 0.1  # Ignore ground below 10cm
+          max_obstacle_height: 2.0
+          obstacle_max_range: 8.0  # Mark obstacles up to 8m
+          obstacle_min_range: 0.0
+          raytrace_max_range: 10.0  # Clear free space up to 10m
+          raytrace_min_range: 0.0
+          clearing: true  # Clear obstacles
+          marking: true  # Mark obstacles
+
+        # Camera 2 - Rear/Side Camera
+        camera2_cloud:
+          topic: /zed_rear/zed_node/point_cloud/cloud_registered
+          sensor_frame: camera2_camera_link
+          data_type: "PointCloud2"
+          min_obstacle_height: 0.1
+          max_obstacle_height: 2.0
+          obstacle_max_range: 8.0
+          obstacle_min_range: 0.0
+          raytrace_max_range: 10.0
+          raytrace_min_range: 0.0
+          clearing: true
+          marking: true
+
+        # Camera 3 - Manipulator/Top Camera
+        camera3_cloud:
+          topic: /zed_manipulator/zed_node/point_cloud/cloud_registered
+          sensor_frame: camera3_camera_link
+          data_type: "PointCloud2"
+          min_obstacle_height: 0.1
+          max_obstacle_height: 2.0
+          obstacle_max_range: 6.0  # Shorter range for manipulator camera
+          obstacle_min_range: 0.0
+          raytrace_max_range: 8.0
+          raytrace_min_range: 0.0
+          clearing: true
+          marking: true
+
+      # --- Inflation Layer: Adds safety margin around obstacles ---
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        enabled: true
+        inflation_radius: 0.70  # 70cm inflation radius (larger than robot ~60cm)
+        cost_scaling_factor: 3.0  # How quickly cost decays (higher = sharper gradient)
+        inflate_unknown: false  # Don't inflate unknown space
+        inflate_around_unknown: true  # Inflate around unknown regions
+
+# ==============================================================================
+
+# LOCAL COSTMAP - Uses recent sensor data for obstacle avoidance
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      # === Frame Configuration ===
+      global_frame: odom  # Use odometry frame (more stable than map for local)
+      robot_base_frame: base_link
+
+      # === Update Rates ===
+      update_frequency: 5.0  # Update at 5 Hz (faster than global)
+      publish_frequency: 2.0  # Publish at 2 Hz
+
+      # === Map Configuration ===
+      use_sim_time: false
+      rolling_window: true  # Rolling window follows robot
+      width: 10  # 10 meters around robot
+      height: 10  # 10 meters around robot
+      resolution: 0.05  # 5cm per cell
+
+      # === Transform Tolerance ===
+      transform_tolerance: 0.3
+
+      # === Costmap Layers ===
+      plugins: ["voxel_layer", "inflation_layer"]
+
+      # --- Voxel Layer: 3D obstacle detection ---
+      voxel_layer:
+        plugin: "nav2_costmap_2d::VoxelLayer"
+        enabled: true
+        footprint_clearing_enabled: true
+        publish_voxel_map: true  # Publish 3D voxel grid for visualization
+
+        # Voxel grid configuration
+        origin_z: 0.0  # Start at ground level
+        z_resolution: 0.05  # 5cm vertical resolution
+        z_voxels: 40  # 40 voxels * 5cm = 2.0m height
+        unknown_threshold: 15  # Voxels needed to mark cell as unknown
+        mark_threshold: 0  # Voxels needed to mark as obstacle
+
+        # Obstacle height filtering
+        max_obstacle_height: 2.0
+        min_obstacle_height: 0.0
+
+        # Observation sources: 3 cameras
+        observation_sources: camera1_cloud camera2_cloud camera3_cloud
+
+        # Camera 1 - Front
+        camera1_cloud:
+          topic: /zed_front/zed_node/point_cloud/cloud_registered
+          sensor_frame: camera1_camera_link
+          data_type: "PointCloud2"
+          min_obstacle_height: 0.1
+          max_obstacle_height: 2.0
+          obstacle_max_range: 5.0  # Shorter range for local costmap
+          obstacle_min_range: 0.0
+          raytrace_max_range: 6.0
+          raytrace_min_range: 0.0
+          clearing: true
+          marking: true
+
+        # Camera 2 - Rear/Side
+        camera2_cloud:
+          topic: /zed_rear/zed_node/point_cloud/cloud_registered
+          sensor_frame: camera2_camera_link
+          data_type: "PointCloud2"
+          min_obstacle_height: 0.1
+          max_obstacle_height: 2.0
+          obstacle_max_range: 5.0
+          obstacle_min_range: 0.0
+          raytrace_max_range: 6.0
+          raytrace_min_range: 0.0
+          clearing: true
+          marking: true
+
+        # Camera 3 - Manipulator/Top
+        camera3_cloud:
+          topic: /zed_manipulator/zed_node/point_cloud/cloud_registered
+          sensor_frame: camera3_camera_link
+          data_type: "PointCloud2"
+          min_obstacle_height: 0.1
+          max_obstacle_height: 2.0
+          obstacle_max_range: 4.0
+          obstacle_min_range: 0.0
+          raytrace_max_range: 5.0
+          raytrace_min_range: 0.0
+          clearing: true
+          marking: true
+
+      # --- Inflation Layer ---
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        enabled: true
+        inflation_radius: 0.70  # 70cm inflation
+        cost_scaling_factor: 5.0  # Sharper gradient for local planning
+        inflate_unknown: false
+        inflate_around_unknown: true
+
+# ==============================================================================
+# NOTES:
+#
+# Topic Connections:
+#   Global Costmap ← /rtabmap/grid_map (from RTAB-Map SLAM)
+#   Local Costmap  ← Point clouds from 3 ZED cameras
+#
+# Camera Topics (adjust names based on your ZED launch configuration):
+#   /zed_front/zed_node/point_cloud/cloud_registered
+#   /zed_rear/zed_node/point_cloud/cloud_registered
+#   /zed_manipulator/zed_node/point_cloud/cloud_registered
+#
+# If your ZED topics have different names, update them above!
+# ==============================================================================

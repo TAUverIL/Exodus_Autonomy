@@ -1,9 +1,17 @@
 zed_config:
-  cam_names: "[camera1,camera2]"
-  cam_models: "[zed2i,zed2i]"
-  cam_serials: "[32514439,31718458]"
+  cam_names: "[camera1,camera2,camera3]"
+  cam_models: "[zed2i,zed2i,zed2i]"
+  cam_serials: "[32514439,31718458,33289078]"  # Camera 1: Front, Camera 2: Rear, Camera 3: Manipulator
   disable_tf: "True"
-  
+
+  # Enable point cloud publishing for all cameras
+  depth:
+    depth_mode: "ULTRA"  # ULTRA or NEURAL for best quality
+    point_cloud_freq: 15.0  # 15Hz point cloud publishing
+
+  publish:
+    depth:
+      point_cloud: true  # Enable point cloud output
 
 launch_flags:
   rviz: false
@@ -11,8 +19,65 @@ launch_flags:
   multicamera_odom: true
 
 rtabmap_params:
+  # === Core RTAB-Map Settings ===
   frame_id: "camera1_camera_link"
   subscribe_rgbd: true
-  rgbd_cameras: 0
+  rgbd_cameras: 3  # Now using 3 cameras instead of 0
   approx_sync: false
-  Vis/EstimationType: "0"
+
+  # === Visual Odometry Settings ===
+  Vis/EstimationType: "0"  # 0=3D->3D, 1=3D->2D (PnP)
+  Vis/FeatureType: "6"  # 6=GFTT/BRIEF, 8=FAST/BRIEF, 9=ORB
+  Vis/MaxFeatures: "400"  # Features per image
+  Vis/MinInliers: "15"  # Minimum inliers to accept motion
+
+  # === SLAM Settings ===
+  RGBD/OptimizeFromGraphEnd: "false"
+  RGBD/LoopClosureReextractFeatures: "true"
+  Mem/IncrementalMemory: "true"
+  Mem/InitWMWithAllNodes: "false"
+
+  # === Point Cloud Settings (for 3D mapping) ===
+  cloud_decimation: 4  # Reduce point cloud density (1=no decimation, 4=every 4th point)
+  cloud_max_depth: 10.0  # Maximum depth in meters
+  cloud_min_depth: 0.3  # Minimum depth in meters
+  cloud_voxel_size: 0.05  # Voxel grid filter size (5cm) - reduces point cloud size
+  cloud_floor_culling_height: 0.0  # Remove floor points below this height
+  cloud_ceiling_culling_height: 2.5  # Remove ceiling points above this height
+
+  # === 2D Grid Map Generation (THIS IS CRITICAL FOR COSTMAP) ===
+  Grid/FromDepth: "true"  # Create 2D occupancy grid from depth images
+  Grid/3D: "false"  # Generate 2D grid (not 3D)
+  Grid/RayTracing: "true"  # Use ray tracing to mark free space
+  Grid/CellSize: "0.05"  # Grid cell size: 5cm resolution
+  Grid/RangeMax: "10.0"  # Maximum range for grid mapping (10m)
+  Grid/RangeMin: "0.3"  # Minimum range
+  Grid/ClusterRadius: "0.1"  # Cluster nearby obstacle points (10cm)
+  Grid/GroundIsObstacle: "false"  # Don't mark ground as obstacle
+  Grid/MaxObstacleHeight: "2.0"  # Only obstacles below 2m are marked
+  Grid/MinGroundHeight: "-0.5"  # Ground detection: below -50cm is ground
+  Grid/MaxGroundHeight: "0.1"  # Ground detection: above 10cm is obstacle
+  Grid/NormalsSegmentation: "true"  # Use normal vectors for ground segmentation
+  Grid/MaxGroundAngle: "45"  # Maximum ground angle in degrees
+  Grid/PreVoxelFiltering: "true"  # Pre-filter with voxel before grid projection
+
+  # === Map Publishing Settings ===
+  publish_tf: true  # Publish map->odom transform
+  map_frame_id: "map"  # Global map frame
+  odom_frame_id: "odom"  # Odometry frame
+  base_frame_id: "base_link"  # Robot base frame
+
+  # === Optimization ===
+  RGBD/ProximityBySpace: "true"
+  RGBD/ProximityByTime: "false"
+  RGBD/OptimizeMaxError: "3.0"  # Maximum optimization error
+
+  # === Memory Management ===
+  Rtabmap/DetectionRate: "1.0"  # Process every frame (1Hz = every 1 second, 0 = all frames)
+  Rtabmap/TimeThr: "0"  # No time threshold for loop closure
+  Kp/MaxFeatures: "400"  # Max features for loop closure detection
+
+  # === Output Topics (will be created) ===
+  # /rtabmap/grid_map - 2D occupancy grid (THIS FEEDS TO GLOBAL COSTMAP)
+  # /rtabmap/cloud_map - 3D point cloud map
+  # /rtabmap/proj_map - Projected 2D map
