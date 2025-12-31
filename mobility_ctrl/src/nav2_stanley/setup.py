@@ -23,8 +23,9 @@ setup(
         (os.path.join('share', package_name, 'world'), glob('world/*')),
         # Include rviz files
         (os.path.join('share', package_name, 'rviz'), glob('rviz/*.rviz')),
-        # Include map files
-        (os.path.join('share', package_name, 'maps'), glob('maps/*')),
+        # Include map files (exclude Windows Zone.Identifier files)
+        (os.path.join('share', package_name, 'maps'),
+         [f for f in glob('maps/*') if not f.endswith(':Zone.Identifier')]),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
