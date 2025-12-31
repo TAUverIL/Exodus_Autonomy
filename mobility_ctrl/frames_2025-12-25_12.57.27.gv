@@ -1,0 +1,16 @@
+digraph G {
+"camera1_camera_link" -> "camera1_camera_center"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"camera1_camera_center" -> "camera1_left_camera_frame"[label=" Broadcaster: default_authority\nAverage rate: 15.395\nBuffer length: 2.144\nMost recent transform: 1766660247.234587\nOldest transform: 1766660245.09105\n"];
+"camera1_left_camera_frame" -> "camera1_left_camera_frame_optical"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"camera1_camera_center" -> "camera1_right_camera_frame"[label=" Broadcaster: default_authority\nAverage rate: 15.409\nBuffer length: 2.077\nMost recent transform: 1766660247.16776\nOldest transform: 1766660245.09105\n"];
+"camera1_right_camera_frame" -> "camera1_right_camera_frame_optical"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"camera2_camera_link" -> "camera2_camera_center"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"camera2_camera_center" -> "camera2_left_camera_frame"[label=" Broadcaster: default_authority\nAverage rate: 12.716\nBuffer length: 1.809\nMost recent transform: 1766660246.871487\nOldest transform: 1766660245.062791\n"];
+"camera2_left_camera_frame" -> "camera2_left_camera_frame_optical"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"camera2_camera_center" -> "camera2_right_camera_frame"[label=" Broadcaster: default_authority\nAverage rate: 12.631\nBuffer length: 1.742\nMost recent transform: 1766660246.804485\nOldest transform: 1766660245.062791\n"];
+"camera2_right_camera_frame" -> "camera2_right_camera_frame_optical"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1766660247.3944283"[ shape=plaintext ] ;
+}->"camera2_camera_link";
+}
