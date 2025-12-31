@@ -172,15 +172,15 @@ def load_yaml_params(context, config_path):
     ]
 
 def generate_launch_description():
+    from ament_index_python.packages import get_package_share_directory
+
+    # Get config file from installed package location
+    pkg_share = get_package_share_directory('multi_zed_rtab')
+    default_config = os.path.join(pkg_share, 'config', 'multi_camera_config.yaml')
+
     config_file_arg = DeclareLaunchArgument(
         'config_file',
-        default_value=os.path.join(
-            os.path.expanduser('~'),
-            'Exodus2025',
-            'mobility_ctrl',
-            'config',
-            'multi_camera_config.yaml'
-        ),
+        default_value=default_config,
         description='Path to YAML config file.'
     )
 
