@@ -27,11 +27,11 @@ import os
 
 def generate_launch_description():
     # Get package directory
-    pkg_dir = get_package_share_directory('mobility_ctrl')
+    pkg_dir = get_package_share_directory('multi_zed_rtab')
 
     # Path to costmap configuration file
     costmap_config_file = PathJoinSubstitution([
-        FindPackageShare('mobility_ctrl'),
+        FindPackageShare('multi_zed_rtab'),
         'config',
         'costmap_params.yaml'
     ])
