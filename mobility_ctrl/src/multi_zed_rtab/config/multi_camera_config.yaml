@@ -11,7 +11,10 @@ zed_config:
 
   publish:
     depth:
+      depth: true  # Enable depth map
       point_cloud: true  # Enable point cloud output
+    rgb:
+      image_rect_color: true  # Enable RGB rectified images (REQUIRED for RTAB-Map!)
 
 launch_flags:
   rviz: false
