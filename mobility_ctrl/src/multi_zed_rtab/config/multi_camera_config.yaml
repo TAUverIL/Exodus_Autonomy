@@ -27,12 +27,12 @@ rtabmap_params:
   subscribe_depth: false
   subscribe_rgb: false
   subscribe_stereo: false
-  subscribe_rgbd: false
+  subscribe_rgbd: true  # TRUE = use RGBD interface
   subscribe_scan: false
   subscribe_scan_cloud: false
   subscribe_user_data: false
   subscribe_odom_info: false
-  rgbd_cameras: 0  # 0 = use /rgbd_images topic (combined from all cameras)
+  rgbd_cameras: 0  # 0 = use /rgbd_images topic (combined), not individual rgbd_image topics
   approx_sync: true
 
   # === Visual Odometry Settings ===
