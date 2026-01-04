@@ -23,11 +23,17 @@ launch_flags:
 
 rtabmap_params:
   # === Core RTAB-Map Settings ===
-  frame_id: "camera1_camera_link"
-  subscribe_rgbd: false  # Disabled - using RGBDImages interface instead
-  subscribe_rgbd_images: true  # Use RGBDImages topic from rgbdx_sync
-  rgbd_cameras: 0  # Set to 0 to use RGBDImages interface (no multi-RGBD compile needed)
-  approx_sync: true  # Enable approximate sync for better compatibility
+  frame_id: "camera1_left_camera_frame"
+  subscribe_depth: false
+  subscribe_rgb: false
+  subscribe_stereo: false
+  subscribe_rgbd: false
+  subscribe_scan: false
+  subscribe_scan_cloud: false
+  subscribe_user_data: false
+  subscribe_odom_info: false
+  rgbd_cameras: 0  # 0 = use /rgbd_images topic (combined from all cameras)
+  approx_sync: true
 
   # === Visual Odometry Settings ===
   Vis/EstimationType: "0"  # 0=3D->3D, 1=3D->2D (PnP)
