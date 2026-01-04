@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
 package_name = 'autonomy_node'
 
@@ -10,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,7 +27,12 @@ setup(
     },
     entry_points={
         'console_scripts': [
-    'camera_sub = autonomy_node.camera_subscriber:main',],
+            'camera_sub = autonomy_node.camera_subscriber:main',
+            'detector_3cam = autonomy_node.detector_3cam:main',
+            'grid_mapper = autonomy_node.grid_mapper_3cam:main',
+            'odom_fusion = autonomy_node.odom_fusion:main',
+            'path_planner = autonomy_node.path_planner:main',
+        ],
     },
     
 )

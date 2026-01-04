@@ -62,6 +62,19 @@ def load_yaml_params(context, config_path):
         parameters=[{'approx_sync': True},{'queue_size': 30}, {'use_sim_time':use_sim_time}]
     )
 
+    rgbd_sync3 = Node(
+        package='rtabmap_sync',
+        executable='rgbd_sync',
+        namespace='camera3',
+        name='rgbd_sync3',
+        remappings=[
+            ('rgb/image', '/zed_multi/camera3/left/image_rect_color'),
+            ('depth/image', '/zed_multi/camera3/depth/depth_registered'),
+            ('rgb/camera_info', '/zed_multi/camera3/left/camera_info'),
+        ],
+        parameters=[{'approx_sync': True},{'queue_size': 30}, {'use_sim_time':use_sim_time}]
+    )
+
     rgbdx_sync = Node(
         package='rtabmap_sync',
         executable='rgbdx_sync',
@@ -70,10 +83,11 @@ def load_yaml_params(context, config_path):
         remappings=[
             ('rgbd_image0', '/camera1/rgbd_image'),
             ('rgbd_image1', '/camera2/rgbd_image'),
+            ('rgbd_image2', '/camera3/rgbd_image'),
             ('rgbd_images', '/rgbd_images'),
         ],
         parameters=[
-            {'rgbd_cameras': 2},
+            {'rgbd_cameras': 3},
             {'approx_sync': True},
             {'queue_size': 30}
         ]
@@ -164,6 +178,7 @@ def load_yaml_params(context, config_path):
         zed_launcher,
         rgbd_sync1,
         rgbd_sync2,
+        rgbd_sync3,
         rgbdx_sync,
         odometry_node,
         rtabmap_node,
