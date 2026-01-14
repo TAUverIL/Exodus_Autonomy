@@ -23,7 +23,7 @@ launch_flags:
 
 rtabmap_params:
   # === Core RTAB-Map Settings ===
-  frame_id: "camera1_left_camera_frame"
+  frame_id: "base_link"  # Robot base frame - RTAB-Map publishes odom->base_link
   subscribe_depth: false
   subscribe_rgb: false
   subscribe_stereo: false

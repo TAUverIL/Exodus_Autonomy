@@ -6,6 +6,7 @@ Publishes fused odometry to /autonomy/fused_odom
 """
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 from nav_msgs.msg import Odometry
 import numpy as np
 from geometry_msgs.msg import PoseWithCovariance, TwistWithCovariance
@@ -33,12 +34,28 @@ class OdometryFusion(Node):
         # Last update time
         self.last_time = None
 
+        # QoS profile for RTAB-Map odometry (uses RELIABLE)
+        rtabmap_qos = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,
+            durability=DurabilityPolicy.VOLATILE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10
+        )
+
+        # QoS profile for wheel odometry (may use BEST_EFFORT)
+        sensor_qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10
+        )
+
         # Subscribe to ZED odometry (from RTAB-Map)
         self.sub_zed_odom = self.create_subscription(
             Odometry,
             '/rtabmap/odom',
             self.zed_odom_callback,
-            10
+            rtabmap_qos
         )
 
         # Subscribe to wheel odometry (from computer team)
@@ -46,7 +63,7 @@ class OdometryFusion(Node):
             Odometry,
             '/wheel_odom',  # Adjust topic name based on computer team's output
             self.wheel_odom_callback,
-            10
+            sensor_qos
         )
 
         # Publisher for fused odometry

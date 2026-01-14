@@ -8,7 +8,6 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid, Odometry, Path
 from geometry_msgs.msg import PoseStamped, Point
-from exodus_interfaces.msg import WaypointArray, Waypoint  # Assuming custom message
 import numpy as np
 import heapq
 import math

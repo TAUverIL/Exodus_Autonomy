@@ -10,6 +10,7 @@ global_costmap:
       # === Frame Configuration ===
       global_frame: map
       robot_base_frame: base_link
+      robot_radius: 0.30  # Robot radius in meters (~60cm diameter rover)
 
       # === Update Rates ===
       update_frequency: 1.0  # Update costmap at 1 Hz
@@ -34,7 +35,7 @@ global_costmap:
         enabled: true
         subscribe_to_updates: true
         map_subscribe_transient_local: true
-        map_topic: /rtabmap/grid_map  # ← CRITICAL: Connection to RTAB-Map!
+        map_topic: /rtabmap/map  # Uses standard RTAB-Map 2D occupancy grid
 
       # --- Obstacle Layer: Uses camera point clouds ---
       obstacle_layer:
@@ -107,6 +108,7 @@ local_costmap:
       # === Frame Configuration ===
       global_frame: odom  # Use odometry frame (more stable than map for local)
       robot_base_frame: base_link
+      robot_radius: 0.30  # Robot radius in meters (~60cm diameter rover)
 
       # === Update Rates ===
       update_frequency: 5.0  # Update at 5 Hz (faster than global)
@@ -201,13 +203,16 @@ local_costmap:
 # NOTES:
 #
 # Topic Connections:
-#   Global Costmap ← /rtabmap/grid_map (from RTAB-Map SLAM)
+#   Global Costmap ← /rtabmap/map (from RTAB-Map SLAM)
 #   Local Costmap  ← Point clouds from 3 ZED cameras
 #
-# Camera Topics (adjust names based on your ZED launch configuration):
-#   /zed_front/zed_node/point_cloud/cloud_registered
-#   /zed_rear/zed_node/point_cloud/cloud_registered
-#   /zed_manipulator/zed_node/point_cloud/cloud_registered
+# Camera Topics:
+#   /zed_multi/camera1/point_cloud/cloud_registered (front)
+#   /zed_multi/camera2/point_cloud/cloud_registered (rear)
+#   /zed_multi/camera3/point_cloud/cloud_registered (manipulator)
 #
-# If your ZED topics have different names, update them above!
+# TF Frame Tree Required:
+#   map -> odom -> base_link -> camera1_camera_link -> ...
+#                            -> camera2_camera_link -> ...
+#                            -> camera3_camera_link -> ...
 # ==============================================================================

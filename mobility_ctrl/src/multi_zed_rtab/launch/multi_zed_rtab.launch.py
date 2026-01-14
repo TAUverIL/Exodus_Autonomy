@@ -174,6 +174,33 @@ def load_yaml_params(context, config_path):
         arguments=['-d', os.path.join(rtabmap_ros_dir, 'launch', 'config', 'rgbd.rviz')],
     )
 
+    # Static Transform Publishers for TF tree
+    # All cameras are children of base_link
+    # TF tree: map -> odom -> base_link -> camera_links
+    # Camera 1 (front): mounted 1.5m above base_link, facing forward
+    tf_base_to_camera1 = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='tf_base_to_camera1',
+        arguments=['0.3', '0', '1.5', '0', '0', '0', 'base_link', 'camera1_camera_link'],
+    )
+
+    # Camera 2 (rear) - attached to base_link, facing backward
+    tf_base_to_camera2 = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='tf_base_to_camera2',
+        arguments=['-0.12', '0', '1.0', '0', '0', '3.14159', 'base_link', 'camera2_camera_link'],
+    )
+
+    # Camera 3 (manipulator/overhead) - attached to base_link, 30deg down tilt
+    tf_base_to_camera3 = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='tf_base_to_camera3',
+        arguments=['0.2', '0', '1.2', '0', '0.524', '0', 'base_link', 'camera3_camera_link'],
+    )
+
     return [
         zed_launcher,
         rgbd_sync1,
@@ -183,7 +210,10 @@ def load_yaml_params(context, config_path):
         odometry_node,
         rtabmap_node,
         rtabmapviz_node,
-        rviz_node
+        rviz_node,
+        tf_base_to_camera1,
+        tf_base_to_camera2,
+        tf_base_to_camera3
     ]
 
 def generate_launch_description():

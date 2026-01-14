@@ -44,44 +44,40 @@ def generate_launch_description():
     )
 
     # === GLOBAL COSTMAP NODE ===
+    # Node name matches YAML structure: global_costmap/global_costmap
     global_costmap_node = Node(
         package='nav2_costmap_2d',
         executable='nav2_costmap_2d',
         name='global_costmap',
+        namespace='global_costmap',
         output='screen',
         parameters=[
             costmap_config_file,
             {'use_sim_time': LaunchConfiguration('use_sim_time')}
         ],
         remappings=[
-            # CRITICAL: Remap /map to RTAB-Map's grid_map output
-            ('/map', '/rtabmap/grid_map'),
-            # Ensure costmap publishes to correct topic
-            ('costmap', 'global_costmap/costmap'),
-            ('costmap_updates', 'global_costmap/costmap_updates'),
+            # CRITICAL: Remap /map to RTAB-Map's occupancy grid output
+            ('/map', '/rtabmap/map'),
         ]
     )
 
     # === LOCAL COSTMAP NODE ===
+    # Node name matches YAML structure: local_costmap/local_costmap
     local_costmap_node = Node(
         package='nav2_costmap_2d',
         executable='nav2_costmap_2d',
         name='local_costmap',
+        namespace='local_costmap',
         output='screen',
         parameters=[
             costmap_config_file,
             {'use_sim_time': LaunchConfiguration('use_sim_time')}
         ],
-        remappings=[
-            # Local costmap topic remappings
-            ('costmap', 'local_costmap/costmap'),
-            ('costmap_updates', 'local_costmap/costmap_updates'),
-            ('voxel_grid', 'local_costmap/voxel_grid'),
-        ]
     )
 
     # === LIFECYCLE MANAGER ===
     # Manages lifecycle transitions for costmap nodes
+    # Nav2 lifecycle manager expects node names WITHOUT leading slash
     lifecycle_manager_node = Node(
         package='nav2_lifecycle_manager',
         executable='lifecycle_manager',
@@ -90,9 +86,10 @@ def generate_launch_description():
         parameters=[
             {'use_sim_time': LaunchConfiguration('use_sim_time')},
             {'autostart': True},  # Automatically activate nodes on startup
+            {'bond_timeout': 0.0},  # Disable bond to prevent timeout issues
             {'node_names': [
-                'global_costmap',
-                'local_costmap'
+                'global_costmap/global_costmap',
+                'local_costmap/local_costmap'
             ]}
         ]
     )

@@ -10,13 +10,45 @@
 | Item | Status |
 |------|--------|
 | **Current Phase** | Phase 1 - Jetson Verification & Team Task Assignment |
-| **Last Session** | 2026-01-13 |
-| **Blocking Issues** | None |
-| **Next Action** | Commit changes, deploy to Jetson, team starts 5 tasks |
+| **Last Session** | 2026-01-14 |
+| **Blocking Issues** | None - TF tree and QoS issues fixed |
+| **Next Action** | Rebuild packages, test on Jetson, verify TF tree |
 
 ---
 
 ## Session History
+
+### Session 6 - 2026-01-14
+**Focus:** Debugging costmap, TF tree, and QoS issues
+
+**Completed:**
+- [x] Fixed `odom_fusion.py` QoS mismatch (BEST_EFFORT → RELIABLE for /rtabmap/odom)
+- [x] Fixed `costmap_bringup.launch.py` map topic (/rtabmap/grid_map → /rtabmap/map)
+- [x] Fixed lifecycle manager node names (added leading slashes)
+- [x] Fixed `multi_camera_config.yaml` frame_id (camera1_left_camera_frame → base_link)
+- [x] Fixed static transforms in `multi_zed_rtab.launch.py` (proper TF tree direction)
+- [x] Added `robot_radius: 0.30` to `costmap_params.yaml`
+- [x] Deleted redundant `real_nav.launch.py` and `nav2_params.yaml`
+- [x] Updated CLAUDE.md with correct topics and commands
+
+**Issues Fixed:**
+| Issue | Root Cause | Fix |
+|-------|------------|-----|
+| `/autonomy/fused_odom` not publishing | QoS mismatch (BEST_EFFORT vs RELIABLE) | Changed to RELIABLE QoS |
+| Costmap lifecycle stuck | Wrong map topic + node names | Fixed to `/rtabmap/map` + leading slashes |
+| TF tree disconnected | frame_id conflict + reversed transforms | Changed frame_id to base_link, fixed transform direction |
+
+**Deleted Files:**
+- `src/multi_zed_rtab/launch/real_nav.launch.py`
+- `src/multi_zed_rtab/config/nav2_params.yaml`
+
+**Next Session Should:**
+1. Rebuild: `colcon build --packages-select multi_zed_rtab autonomy_node --symlink-install`
+2. Clean shared memory: `sudo rm -rf /dev/shm/fastrtps_*`
+3. Test TF tree: `ros2 run tf2_ros tf2_echo map base_link`
+4. Verify costmaps activate properly
+
+---
 
 ### Session 5 - 2026-01-13
 **Focus:** Team task division and implementation guides
@@ -161,10 +193,11 @@ mobility_ctrl/
     │       └── path_planner.py       # A* planning
     ├── multi_zed_rtab/
     │   ├── config/
-    │   │   └── multi_camera_config.yaml  # RTAB-Map params
+    │   │   ├── multi_camera_config.yaml  # RTAB-Map params
+    │   │   └── costmap_params.yaml       # Nav2 costmap params
     │   └── launch/
-    │       ├── multi_zed_rtab.launch.py  # Camera + SLAM
-    │       └── real_nav.launch.py        # Costmaps
+    │       ├── multi_zed_rtab.launch.py  # Camera + SLAM + TF
+    │       └── costmap_bringup.launch.py # Nav2 costmaps
     └── follow_waypoints/
         └── follow_waypoints/
             └── follow_waypoints.py   # Nav2 waypoint follower
@@ -178,7 +211,7 @@ mobility_ctrl/
 | `/zed_multi/camera{1,2,3}/depth/depth_registered` | Image | ZED cameras |
 | `/autonomy/obstacle_detections` | ObstacleDetection | detector_3cam |
 | `/autonomy/occupancy_grid` | OccupancyGrid | grid_mapper_3cam |
-| `/rtabmap/grid_map` | OccupancyGrid | RTAB-Map |
+| `/rtabmap/map` | OccupancyGrid | RTAB-Map |
 | `/rtabmap/odom` | Odometry | RTAB-Map |
 | `/autonomy/fused_odom` | Odometry | odom_fusion |
 | `/autonomy/planned_path` | Path | path_planner |
@@ -210,4 +243,4 @@ At the end of each session, update:
 
 ---
 
-**Last Updated:** 2026-01-13
+**Last Updated:** 2026-01-14
