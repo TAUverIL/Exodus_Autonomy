@@ -17,7 +17,7 @@ def load_yaml_params(context, config_path):
 
     from ament_index_python.packages import get_package_share_directory
     rtabmap_ros_dir = get_package_share_directory('rtabmap_ros')
-    use_sim_time = LaunchConfiguration('use_sim_time', default=True)
+    use_sim_time = LaunchConfiguration('use_sim_time', default=False)  # FALSE for real hardware!
 
     zed_launcher = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -42,9 +42,9 @@ def load_yaml_params(context, config_path):
         namespace='camera1',
         name='rgbd_sync1',
         remappings=[
-            ('rgb/image', '/zed_multi/camera1/left/image_rect_color'),
+            ('rgb/image', '/zed_multi/camera1/rgb/color/rect/image'),
             ('depth/image', '/zed_multi/camera1/depth/depth_registered'),
-            ('rgb/camera_info', '/zed_multi/camera1/left/camera_info'),
+            ('rgb/camera_info', '/zed_multi/camera1/rgb/color/rect/camera_info'),
         ],
         parameters=[{'approx_sync': True},{'queue_size': 30}, {'use_sim_time':use_sim_time}]
     )
@@ -55,9 +55,22 @@ def load_yaml_params(context, config_path):
         namespace='camera2',
         name='rgbd_sync2',
         remappings=[
-            ('rgb/image', '/zed_multi/camera2/left/image_rect_color'),
+            ('rgb/image', '/zed_multi/camera2/rgb/color/rect/image'),
             ('depth/image', '/zed_multi/camera2/depth/depth_registered'),
-            ('rgb/camera_info', '/zed_multi/camera2/left/camera_info'),
+            ('rgb/camera_info', '/zed_multi/camera2/rgb/color/rect/camera_info'),
+        ],
+        parameters=[{'approx_sync': True},{'queue_size': 30}, {'use_sim_time':use_sim_time}]
+    )
+
+    rgbd_sync3 = Node(
+        package='rtabmap_sync',
+        executable='rgbd_sync',
+        namespace='camera3',
+        name='rgbd_sync3',
+        remappings=[
+            ('rgb/image', '/zed_multi/camera3/rgb/color/rect/image'),
+            ('depth/image', '/zed_multi/camera3/depth/depth_registered'),
+            ('rgb/camera_info', '/zed_multi/camera3/rgb/color/rect/camera_info'),
         ],
         parameters=[{'approx_sync': True},{'queue_size': 30}, {'use_sim_time':use_sim_time}]
     )
@@ -70,10 +83,11 @@ def load_yaml_params(context, config_path):
         remappings=[
             ('rgbd_image0', '/camera1/rgbd_image'),
             ('rgbd_image1', '/camera2/rgbd_image'),
+            ('rgbd_image2', '/camera3/rgbd_image'),
             ('rgbd_images', '/rgbd_images'),
         ],
         parameters=[
-            {'rgbd_cameras': 2},
+            {'rgbd_cameras': 3},
             {'approx_sync': True},
             {'queue_size': 30}
         ]
@@ -86,9 +100,9 @@ def load_yaml_params(context, config_path):
         namespace='rtabmap',
         output='screen',
         remappings=[
-            ('rgb/image', '/zed_multi/camera1/left/image_rect_color'),
+            ('rgb/image', '/zed_multi/camera1/rgb/color/rect/image'),
             ('depth/image', '/zed_multi/camera1/depth/depth_registered'),
-            ('rgb/camera_info', '/zed_multi/camera1/left/camera_info'),
+            ('rgb/camera_info', '/zed_multi/camera1/rgb/color/rect/camera_info'),
             ('rgbd_image', '/camera1/rgbd_image'),
             ('rgbd_images', '/rgbd_images'),
             ('imu', '/zed_multi/camera1/imu/data'),
@@ -105,15 +119,15 @@ def load_yaml_params(context, config_path):
     arguments=['--delete_db_on_start'],
     remappings=[
         ('map', '/rtabmap/map'),
-        ('rgb/image', '/zed_multi/camera1/left/image_rect_color'),
+        ('rgb/image', '/zed_multi/camera1/rgb/color/rect/image'),
         ('depth/image', '/zed_multi/camera1/depth/depth_registered'),
-        ('rgb/camera_info', '/zed_multi/camera1/left/camera_info'),
+        ('rgb/camera_info', '/zed_multi/camera1/rgb/color/rect/camera_info'),
         ('rgbd_image', '/camera1/rgbd_image'),
         ('rgbd_images', '/rgbd_images'),
-        ('left/image_rect', '/zed_multi/camera1/left/image_rect_color'),
-        ('right/image_rect', '/zed_multi/camera2/left/image_rect_color'),  # Assumed right = second camera left image
-        ('left/camera_info', '/zed_multi/camera1/left/camera_info'),
-        ('right/camera_info', '/zed_multi/camera2/left/camera_info'),      # Assumed right = second camera left camera_info
+        ('left/image_rect', '/zed_multi/camera1/rgb/color/rect/image'),
+        ('right/image_rect', '/zed_multi/camera2/rgb/color/rect/image'),
+        ('left/camera_info', '/zed_multi/camera1/rgb/color/rect/camera_info'),
+        ('right/camera_info', '/zed_multi/camera2/rgb/color/rect/camera_info'),
         ('scan', '/scan'),
         ('scan_cloud', '/scan_cloud'),
         ('user_data', '/user_data'),
@@ -136,15 +150,15 @@ def load_yaml_params(context, config_path):
     output='screen',
     arguments=['-d', os.path.join(rtabmap_ros_dir, 'launch', 'config', 'rgbd_gui.ini')],
     remappings=[
-        ('rgb/image', '/zed_multi/camera1/left/image_rect_color'),
+        ('rgb/image', '/zed_multi/camera1/rgb/color/rect/image'),
         ('depth/image', '/zed_multi/camera1/depth/depth_registered'),
-        ('rgb/camera_info', '/zed_multi/camera1/left/camera_info'),
+        ('rgb/camera_info', '/zed_multi/camera1/rgb/color/rect/camera_info'),
         ('rgbd_image', '/camera1/rgbd_image'),
         ('rgbd_images', '/rgbd_images'),
-        ('left/image_rect', '/zed_multi/camera1/left/image_rect_color'),
-        ('right/image_rect', '/zed_multi/camera2/left/image_rect_color'),  # Assumed as above
-        ('left/camera_info', '/zed_multi/camera1/left/camera_info'),
-        ('right/camera_info', '/zed_multi/camera2/left/camera_info'),      # Assumed as above
+        ('left/image_rect', '/zed_multi/camera1/rgb/color/rect/image'),
+        ('right/image_rect', '/zed_multi/camera2/rgb/color/rect/image'),
+        ('left/camera_info', '/zed_multi/camera1/rgb/color/rect/camera_info'),
+        ('right/camera_info', '/zed_multi/camera2/rgb/color/rect/camera_info'),
         ('scan', '/scan'),
         ('scan_cloud', '/scan_cloud'),
         ('odom', '/rtabmap/odom'),
@@ -164,6 +178,7 @@ def load_yaml_params(context, config_path):
         zed_launcher,
         rgbd_sync1,
         rgbd_sync2,
+        rgbd_sync3,
         rgbdx_sync,
         odometry_node,
         rtabmap_node,

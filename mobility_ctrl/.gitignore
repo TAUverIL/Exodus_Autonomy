@@ -4,3 +4,8 @@ log/
 .vscode/
 problem_solving
 yolo_env/
+
+# Claude Code (personal config)
+.claude/
+CLAUDE.md
+tmpclaude*

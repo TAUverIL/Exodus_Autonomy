@@ -11,7 +11,10 @@ zed_config:
 
   publish:
     depth:
+      depth: true  # Enable depth map
       point_cloud: true  # Enable point cloud output
+    rgb:
+      image_rect_color: true  # Enable RGB rectified images (REQUIRED for RTAB-Map!)
 
 launch_flags:
   rviz: false
@@ -20,10 +23,17 @@ launch_flags:
 
 rtabmap_params:
   # === Core RTAB-Map Settings ===
-  frame_id: "camera1_camera_link"
-  subscribe_rgbd: true
-  rgbd_cameras: 3  # Now using 3 cameras instead of 0
-  approx_sync: false
+  frame_id: "camera1_left_camera_frame"
+  subscribe_depth: false
+  subscribe_rgb: false
+  subscribe_stereo: false
+  subscribe_rgbd: true  # TRUE = use RGBD interface
+  subscribe_scan: false
+  subscribe_scan_cloud: false
+  subscribe_user_data: false
+  subscribe_odom_info: false
+  rgbd_cameras: 0  # 0 = use /rgbd_images topic (combined), not individual rgbd_image topics
+  approx_sync: true
 
   # === Visual Odometry Settings ===
   Vis/EstimationType: "0"  # 0=3D->3D, 1=3D->2D (PnP)
@@ -46,20 +56,19 @@ rtabmap_params:
   cloud_ceiling_culling_height: 2.5  # Remove ceiling points above this height
 
   # === 2D Grid Map Generation (THIS IS CRITICAL FOR COSTMAP) ===
-  Grid/FromDepth: "true"  # Create 2D occupancy grid from depth images
-  Grid/3D: "false"  # Generate 2D grid (not 3D)
-  Grid/RayTracing: "true"  # Use ray tracing to mark free space
-  Grid/CellSize: "0.05"  # Grid cell size: 5cm resolution
-  Grid/RangeMax: "10.0"  # Maximum range for grid mapping (10m)
-  Grid/RangeMin: "0.3"  # Minimum range
-  Grid/ClusterRadius: "0.1"  # Cluster nearby obstacle points (10cm)
-  Grid/GroundIsObstacle: "false"  # Don't mark ground as obstacle
-  Grid/MaxObstacleHeight: "2.0"  # Only obstacles below 2m are marked
-  Grid/MinGroundHeight: "-0.5"  # Ground detection: below -50cm is ground
-  Grid/MaxGroundHeight: "0.1"  # Ground detection: above 10cm is obstacle
-  Grid/NormalsSegmentation: "true"  # Use normal vectors for ground segmentation
-  Grid/MaxGroundAngle: "45"  # Maximum ground angle in degrees
-  Grid/PreVoxelFiltering: "true"  # Pre-filter with voxel before grid projection
+  Proj/MaxGroundAngle: "45"  # Maximum ground angle (degrees)
+  Proj/MinClusterSize: "20"  # Minimum cluster size
+  Proj/MaxObstaclesHeight: "2.0"  # Only obstacles below 2m
+  Proj/MaxGroundHeight: "0.1"  # Ground detection threshold
+  Proj/DetectionRate: "1.0"  # Detection rate (Hz)
+  Proj/MapFrameProjection: "true"  # Project in map frame
+
+  # Grid settings
+  GridGlobal/MinSize: "50.0"  # Minimum grid size (meters)
+  GridGlobal/OccupancyThr: "0.5"  # Occupancy threshold
+  GridGlobal/ProbHit: "0.7"  # Probability for hit
+  GridGlobal/ProbMiss: "0.4"  # Probability for miss
+  GridGlobal/UpdateError: "0.01"  # Update error threshold
 
   # === Map Publishing Settings ===
   publish_tf: true  # Publish map->odom transform
