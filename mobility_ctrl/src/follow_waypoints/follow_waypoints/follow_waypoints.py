@@ -26,9 +26,9 @@ class WaypointFollower(Node):
         self._client.wait_for_server()
         self.get_logger().info('…connected!')
 
-        # subscribe to incoming waypoint lists
+        # subscribe to incoming waypoint lists from path_planner
         self._wp_sub = self.create_subscription(
-            Path, 'waypoints', self._on_waypoints, 10)
+            Path, '/autonomy/waypoints', self._on_waypoints, 10)
 
         self._queue = []
         self._waiting_for_result = False

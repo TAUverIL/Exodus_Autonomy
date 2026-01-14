@@ -34,7 +34,7 @@ global_costmap:
         enabled: true
         subscribe_to_updates: true
         map_subscribe_transient_local: true
-        map_topic: /rtabmap/grid_prob_map  # ← CRITICAL: Connection to RTAB-Map!
+        map_topic: /rtabmap/grid_map  # ← CRITICAL: Connection to RTAB-Map!
 
       # --- Obstacle Layer: Uses camera point clouds ---
       obstacle_layer:

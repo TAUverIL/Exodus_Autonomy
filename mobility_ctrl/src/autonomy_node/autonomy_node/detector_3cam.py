@@ -37,47 +37,47 @@ class ThreeCameraDetector(Node):
             10
         )
 
-        # Setup for 3 cameras based on your rqt_graph
-        # Camera 1 topics
+        # Setup for 3 cameras - topics from multi_zed_rtab.launch.py
+        # Camera 1 topics (Front)
         sub_cam1_rgb = message_filters.Subscriber(
-            self, Image, '/camera1/zed_node_1/rgb/image_rect_color'
+            self, Image, '/zed_multi/camera1/rgb/color/rect/image'
         )
         sub_cam1_depth = message_filters.Subscriber(
-            self, Image, '/camera1/zed_node_1/depth/depth_registered'
+            self, Image, '/zed_multi/camera1/depth/depth_registered'
         )
         self.ts_cam1 = message_filters.ApproximateTimeSynchronizer(
             [sub_cam1_rgb, sub_cam1_depth], queue_size=10, slop=0.05
         )
         self.ts_cam1.registerCallback(
-            lambda rgb, depth: self.process_camera(rgb, depth, "camera1", "Camera 1")
+            lambda rgb, depth: self.process_camera(rgb, depth, "camera1_left_camera_frame", "Camera 1 (Front)")
         )
 
-        # Camera 2 topics
+        # Camera 2 topics (Rear)
         sub_cam2_rgb = message_filters.Subscriber(
-            self, Image, '/camera2/zed_node_2/rgb/image_rect_color'
+            self, Image, '/zed_multi/camera2/rgb/color/rect/image'
         )
         sub_cam2_depth = message_filters.Subscriber(
-            self, Image, '/camera2/zed_node_2/depth/depth_registered'
+            self, Image, '/zed_multi/camera2/depth/depth_registered'
         )
         self.ts_cam2 = message_filters.ApproximateTimeSynchronizer(
             [sub_cam2_rgb, sub_cam2_depth], queue_size=10, slop=0.05
         )
         self.ts_cam2.registerCallback(
-            lambda rgb, depth: self.process_camera(rgb, depth, "camera2", "Camera 2")
+            lambda rgb, depth: self.process_camera(rgb, depth, "camera2_left_camera_frame", "Camera 2 (Rear)")
         )
 
-        # Camera 3 topics (NEW!)
+        # Camera 3 topics (Manipulator)
         sub_cam3_rgb = message_filters.Subscriber(
-            self, Image, '/camera3/zed_node_3/rgb/image_rect_color'
+            self, Image, '/zed_multi/camera3/rgb/color/rect/image'
         )
         sub_cam3_depth = message_filters.Subscriber(
-            self, Image, '/camera3/zed_node_3/depth/depth_registered'
+            self, Image, '/zed_multi/camera3/depth/depth_registered'
         )
         self.ts_cam3 = message_filters.ApproximateTimeSynchronizer(
             [sub_cam3_rgb, sub_cam3_depth], queue_size=10, slop=0.05
         )
         self.ts_cam3.registerCallback(
-            lambda rgb, depth: self.process_camera(rgb, depth, "camera3", "Camera 3")
+            lambda rgb, depth: self.process_camera(rgb, depth, "camera3_left_camera_frame", "Camera 3 (Manipulator)")
         )
 
         self.get_logger().info('3-Camera YOLO Detector initialized!')

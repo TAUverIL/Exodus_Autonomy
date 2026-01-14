@@ -87,15 +87,15 @@ class GridMapper(Node):
 
             # Simple camera positioning based on frame_id
             # Adjust these based on your actual camera mounting positions
-            if frame_id == "camera1":  # Front camera
+            if frame_id == "camera1_left_camera_frame":  # Front camera
                 x = distance  # Forward
                 y = 0.0
-            elif frame_id == "camera2":  # Left camera (example)
-                x = 0.0
-                y = distance
-            elif frame_id == "camera3":  # Right camera (example)
-                x = 0.0
-                y = -distance
+            elif frame_id == "camera2_left_camera_frame":  # Rear camera
+                x = -distance  # Behind robot
+                y = 0.0
+            elif frame_id == "camera3_left_camera_frame":  # Manipulator camera
+                x = distance  # Forward (adjust based on mounting)
+                y = 0.0
             else:
                 continue
 

@@ -1,0 +1,44 @@
+# Build artifacts (ROS 2)
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+.pytest_cache/
+.mypy_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+
+# Large Data & Bags
+*.bag
+*.mcap
+*.db3
+*.pcap
+*.mp4
+*.avi
+*.mov
+
+# Binary / Documentation (Context heavy)
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.gv
+reference/
+docs/site/
+
+# System
+thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
